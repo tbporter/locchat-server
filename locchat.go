@@ -59,27 +59,25 @@ func getMessage(n int, req chat_msg_req_struct) []chat_msg_struct{
 
 //Recieves chat_msg_struct from html and stores it
 func chatHandler(w http.ResponseWriter, r *http.Request){
-    fmt.Println("handling chat")
     decoder := json.NewDecoder(r.Body)
     var m chat_msg_struct
     err := decoder.Decode(&m)
     if err != nil {
     	fmt.Println(err)
+    	http.Error(w,err.Error(), http.StatusBadRequest)
  		return;
     }
     addMessage(m)
-    fmt.Printf("[%f,%f] %s: %s\n",m.Lat,m.Lon,m.Usr,m.Msg)
 }
 
 //recieves a chat_msg_req_struct from html, responds with a chat_msgs_struct
 func pollHandler(w http.ResponseWriter, r *http.Request){
-	fmt.Println("handling poll")
-
 	decoder := json.NewDecoder(r.Body)
     var m chat_msg_req_struct
     err := decoder.Decode(&m)
     if err != nil {
     	fmt.Println(err)
+    	http.Error(w,err.Error(), http.StatusBadRequest)
  		return;
     }
 
@@ -100,7 +98,6 @@ func distInRange(lat1 float64,lon1 float64,lat2 float64,lon2 float64, dist int) 
 	if math.Abs(lat1-lat2) <= maxdist && math.Abs(lon1-lon2) <= maxdist{
 		return true
 	}
-	fmt.Printf("[%f,%f] not in range of [%f,%f] with dist of %f\n",lat1,lon1,lat2,lon2,maxdist)
 	return false
 }
 
